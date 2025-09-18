@@ -1,5 +1,5 @@
 ﻿//кодирование и декадирование строк
-
+//добавлена проверка на коррекцию строки
 using System;
 using System.Text;
 
@@ -14,10 +14,30 @@ class PROB2
         Console.WriteLine("\n" + stroka);
         Console.WriteLine("Закодировано: " + encoded);
         Console.WriteLine("Декодировано: " + decoded);
+        Console.WriteLine(IsValidString(stroka));
     }
 
 
 
+    static string IsValidString(string input)
+    {
+
+        string answer = "";
+        //только заглавные латинские буквы
+        bool matcher = Regex.IsMatch(input, @"^[A-Z]+$");
+        if (matcher)
+        {
+         answer = "Строка абсолютно верная.";
+        }
+        else
+        {
+         answer = "Строка неправильно написана.";
+        }
+        return answer;
+    }
+
+
+    
     static string Encode(string stroka)
     {
         StringBuilder result = new StringBuilder();
@@ -90,3 +110,4 @@ class PROB2
 
     }
 }
+
