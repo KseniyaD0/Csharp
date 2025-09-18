@@ -1,9 +1,12 @@
-﻿//кодирование и декадирование строк
-//добавлена проверка на коррекцию строки
+//кодирование и декадирование строк
+
 using System;
 using System.Text;
+using System.Text.RegularExpressions;
 
-class PROB2
+
+
+class PROB1
 {
     static void Main()
     {
@@ -12,34 +15,33 @@ class PROB2
         string decoded = Decode(encoded);
 
         Console.WriteLine("\n" + stroka);
-        Console.WriteLine("Закодировано: " + encoded);
-        Console.WriteLine("Декодировано: " + decoded);
-        Console.WriteLine(IsValidString(stroka));
-    }
-
-
-
-    static string IsValidString(string input)
-    {
-
-        string answer = "";
-        //только заглавные латинские буквы
-        bool matcher = Regex.IsMatch(input, @"^[A-Z]+$");
-        if (matcher)
+        if (!IsValidString(stroka))
         {
-         answer = "Строка абсолютно верная.";
+            Console.WriteLine("\nСтрока неправильно написана. Невозможно закодировать.");
         }
         else
         {
-         answer = "Строка неправильно написана.";
+            Console.WriteLine("Закодировано: " + encoded);
+            Console.WriteLine("Декодировано: " + decoded);
         }
-        return answer;
     }
 
 
-    
+
+
+
+    static bool IsValidString(string input)
+    {
+        //только заглавные латинские буквы
+        bool matcher = Regex.IsMatch(input, @"^[A-Z]+$");
+        return matcher;
+    }
+
+
+
     static string Encode(string stroka)
     {
+        
         StringBuilder result = new StringBuilder();
         int count = 1;
         char currentChar = stroka[0];
@@ -52,7 +54,7 @@ class PROB2
             }
             else
             {
-            
+
                 if (count > 2)
                 {
                     result.Append(count).Append(currentChar);
@@ -61,7 +63,7 @@ class PROB2
                 {
                     result.Append(new string(currentChar, count));
                 }
-                
+
                 currentChar = stroka[i];
                 count = 1;
             }
@@ -76,7 +78,7 @@ class PROB2
         {
             result.Append(new string(currentChar, count));
         }
-        
+
         return result.ToString();
     }
 
@@ -86,7 +88,7 @@ class PROB2
     {
 
         StringBuilder result = new StringBuilder();
-       
+
 
         for (int i = 0; i < stroka.Length; i++)
         {
@@ -98,12 +100,12 @@ class PROB2
                 {
                     result.Append(bukva);
                 }
- 
+
             }
             else
             {
                 result.Append(stroka[i]);
-        
+
             }
         }
         return result.ToString();
