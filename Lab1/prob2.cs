@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Text;
+using System.Text.RegularExpressions;
 
 struct GeneticData
 {
@@ -11,7 +12,7 @@ struct GeneticData
 
 
 
-class Program
+class PROB2
 {
     static List<GeneticData> geneticData = new List<GeneticData>();
 
@@ -173,6 +174,18 @@ class Program
     }
 
 
+
+  /* не понадобилось в коде с листом GeneticData
+  
+   static bool IsValidString(string input)
+    {
+
+        //только заглавные латинские буквы
+        bool matcher = Regex.IsMatch(input, @"^[A-Z]+$");
+        return matcher;
+    }
+
+
     static string Encode(string stroka)
     {
         StringBuilder result = new StringBuilder();
@@ -187,7 +200,7 @@ class Program
             }
             else
             {
-            
+
                 if (count > 2)
                 {
                     result.Append(count).Append(currentChar);
@@ -214,7 +227,7 @@ class Program
 
         return result.ToString();
     }
-
+*/
 
 
     static string Decode(string stroka)
