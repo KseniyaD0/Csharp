@@ -1,6 +1,7 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.Text;
-using System.Text.RegularExpressions;
+
 
 struct GeneticData
 {
@@ -9,123 +10,255 @@ struct GeneticData
     public string amino_acids;
 }
 
-
-
-
-class PROB2
+class Program
 {
     static List<GeneticData> geneticData = new List<GeneticData>();
 
     static void Main()
     {
-        AddGeneticData();
+        //читаем файл с белками
+        ReadSequencesFile("sequences.0.txt");
 
-//поиск куска цепочки среди всех цепочек
-        Console.WriteLine(" SEARCH: ");  
-        Console.WriteLine("SIIK :" + Search("SIIK"));
-        Console.WriteLine("PLML :" + Search("PLML"));
-        Console.WriteLine("FK3I :" + Search("FK3I"));
+        //список комманд
+        List<string> commandResults = ReadCommandsFile("commands.0.txt");
 
-
-//во сколько символов отличаются две цепочки
-        Console.WriteLine("\nDIFF:");  
-
-        Console.WriteLine("Белки: 6.8 kDa mitochondrial proteolipid, Alcohol dehydrogenase");
-        Console.WriteLine("Цепочки отличаются в " +  Diff("6.8 kDa mitochondrial proteolipid", "Alcohol dehydrogenase"));
-
-        Console.WriteLine("Белки: RNA-dependent RNA polymerase [Fragment], Alcohol dehydrogenase");
-        Console.WriteLine("Цепочки отличаются в " +  Diff("RNA-dependent RNA polymerase [Fragment]", "Alcohol dehydrogenase"));
-
-
-        Console.WriteLine("Белки: Cecropin, Pre-T/NK cell associated protein 6H9A");
-        Console.WriteLine("Цепочки отличаются в " +  Diff("Cecropin", "Pre-T/NK cell associated protein 6H9A"));  
-
-
-
-//определить самый чаще-встречающийся символ в цепочке (декодированный варик)
-        Console.WriteLine("\nMODE:");
-        var result = Mode("Cecropin");
-        Console.WriteLine("В Cecropin: " + result.Item1 + ", " + result.Item2);
-        result = Mode("Alcohol dehydrogenase");
-        Console.WriteLine("В Alcohol dehydrogenase: " + result.Item1 + ", " + result.Item2);
+        //создаем выходной файл
+        CreateOutputFile(commandResults, "genedata.0.txt");
     }
 
 
 
-    static void AddGeneticData()  //лист белков
+    static void ReadSequencesFile(string filename)
     {
-        geneticData.Add(new GeneticData
+        try
         {
-            protein = "6.8 kDa mitochondrial proteolipid",
-            organism = "Homo sapiens (Human)",
-            amino_acids = "MLQSIIKNIWIPMKPYYTKVYQEIWIGMGLMGFIVYKIRAADKRSKALKASAPAPGHH"
-        });
+            string content = File.ReadAllText(filename);
+            string[] objects = content.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
-        geneticData.Add(new GeneticData
+            //берем 1 объект из файла
+            GeneticData currentData = new GeneticData();
+            int lineType = 0; // 0 = protein, 1 = organism, 2 = amino_acids
+
+            foreach (string line in objects)
+            {
+                string trimmed = line.Trim();
+                if (string.IsNullOrWhiteSpace(trimmed))
+                    continue;
+
+                if (lineType == 0) // Protein name
+                {
+                    currentData.protein = trimmed;
+                    lineType = 1;
+                }
+                else if (lineType == 1) // Organism
+                {
+                    currentData.organism = trimmed;
+                    lineType = 2;
+                }
+                else if (lineType == 2) // amino_acids
+                {
+                    currentData.amino_acids = trimmed;
+                    geneticData.Add(currentData);
+                    currentData = new GeneticData();
+                    lineType = 0;
+                }
+            }
+
+        }
+        catch (Exception ex)
         {
-            protein = "Pre-T/NK cell associated protein 6H9A",
-            organism = "Homo sapiens (Human)",
-            amino_acids = "MRLSCLVIITITAELCVPLMLCAHGEQAQLPRGVCVLGTGTSPAWSPVLLGRLPFPH"
-        });
-
-        geneticData.Add(new GeneticData
-        {
-            protein = "Alcohol dehydrogenase",
-            organism = "Brachydanio rerio",
-            amino_acids = "MDTTGKVIKCKAAVAWEAGKPLTIEEVEVAPPKAHEVRVKIHATGVCHTDAYTLSGSDPEGLFPVILGHEGAGTVESVGEGVTK"
-        });
-
-        geneticData.Add(new GeneticData
-        {
-            protein = "RNA-dependent RNA polymerase [Fragment]",
-            organism = "San Miguel sea lion virus",
-            amino_acids = "PSGMPLTSIINSLNHCLMVGCAVVKALEDSGVQATWNIFDSMDLFTYGDDGVYIVPPLISSVMPKVFSNLRQFGLKPTRTDKTDAEITPIPADEPVEFLKRTIVRTENGIRALLDKSSII"
-        });
-
-        geneticData.Add(new GeneticData
-        {
-            protein = "Cecropin",
-            organism = "Bombyx mori (Silk moth)",
-            amino_acids = "RWKIFKKIEKVGQNIRDGIVKAGPAVAVVGQAATI"
-        });
-    }
-
-
-
-static string Search(string proteinPart)
-{
-    // декодировать кусок цепочки
-    string decoded = Decode(proteinPart);
-    
-    foreach (var data in geneticData)
-    {
-        if (data.amino_acids.Contains(decoded))
-        {
-            return data.protein; // Возвращаем название белка
+            Console.WriteLine("Ошибка чтения файла sequences:" + ex.Message);
         }
     }
-    return "NOT FOUND";
-}
 
 
 
 
- static int Diff(string p1, string p2)
+    static List<string> ReadCommandsFile(string inputFilename)
     {
-    GeneticData protein1 = geneticData.FirstOrDefault(p => p.protein == p1);
-    GeneticData protein2 = geneticData.FirstOrDefault(p => p.protein == p2);
+        List<string> commandResults = new List<string>();
 
+        try
+        {
+            string[] commands = File.ReadAllLines(inputFilename);
+            int commandNumber = 1;
+
+            foreach (string command in commands)
+            {
+                if (string.IsNullOrWhiteSpace(command))
+                    continue;
+
+                string[] parts = command.Split('\t');
+                if (parts.Length < 2)
+                    continue;
+
+                string operation = parts[0].Trim();
+                string result = "";
+
+                switch (operation)
+                {
+                    case "search":
+                        string searchPattern = parts[1].Trim();
+                        result = Search(searchPattern, commandNumber);
+                        break;
+
+                    case "diff":
+                        if (parts.Length >= 3)
+                        {
+                            string protein1 = parts[1].Trim();
+                            string protein2 = parts[2].Trim();
+                            result = Diff(protein1, protein2, commandNumber);
+                        }
+                        break;
+
+                    case "mode":
+                        string proteinName = parts[1].Trim();
+                        result = Mode(proteinName, commandNumber);
+                        break;
+                }
+
+                if (!string.IsNullOrEmpty(result))
+                {
+                    commandResults.Add(result);
+                    commandNumber++;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Ошибка чтения commands:" + ex.Message);
+        }
+
+        return commandResults;
+    }
+
+
+
+
+    static void CreateOutputFile(List<string> commandResults, string outputFilename)
+    {
+        try
+        {
+            List<string> output = new List<string>();
+            output.Add("DK");
+            output.Add("Genetic Searching");
+            output.Add("--------------------------------------------------------------------------");
+
+            foreach (string result in commandResults)
+            {
+                output.Add(result);
+                output.Add("--------------------------------------------------------------------------");
+            }
+
+
+            File.WriteAllLines(outputFilename, output);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Ошибка создания файла:" + ex.Message);
+        }
+    }
+
+
+
+    static string Search(string pattern, int commandNumber)
+    {
+        string decodedPattern = Decode(pattern);
+        StringBuilder result = new StringBuilder();
+
+        result.AppendLine("00" + commandNumber + "\tsearch\t" + pattern);
+        result.AppendLine("organism\t\t\tprotein ");
+
+        bool found = false;
+        foreach (var data in geneticData)
+        {
+            if (data.amino_acids.Contains(decodedPattern))
+            {
+                result.AppendLine(data.organism + "\t\t" + data.protein);
+                found = true;
+                break;
+            }
+        }
+
+        if (!found)
+        {
+            result.AppendLine("NOT FOUND");
+        }
+
+        return result.ToString();
+    }
+
+
+
+    static string Diff(string protein1, string protein2, int commandNumber)
+    {
+        StringBuilder result = new StringBuilder();
+        result.AppendLine("00" + commandNumber + "\tdiff" + protein1 + "\t" + protein2);
+        result.AppendLine("amino-acids difference: ");
+
+        GeneticData data1 = geneticData.FirstOrDefault(p => p.protein == protein1);
+        GeneticData data2 = geneticData.FirstOrDefault(p => p.protein == protein2);
+
+        if (data1.protein == null || data2.protein == null)
+        {
+            result.AppendLine("PROTEIN NOT FOUND");
+        }
+        else if (!IsValid(data1.amino_acids) || !IsValid(data2.amino_acids))
+        {
+            result.AppendLine("Protein is wrong written");
+        }
+        else
+        {
+            int differences = CalculateDifferences(data1.amino_acids, data2.amino_acids);
+            result.AppendLine(differences.ToString());
+        }
+
+        return result.ToString();
+    }
+
+
+
+    static string Mode(string proteinName, int commandNumber)
+    {
+        StringBuilder result = new StringBuilder();
+        result.AppendLine("00" + commandNumber + "\tmode\t" + proteinName);
+        result.AppendLine("amino-acid occurs: ");
+
+        GeneticData protein = geneticData.FirstOrDefault(p => p.protein == proteinName);
+
+        if (protein.protein == null)
+        {
+            result.AppendLine("PROTEIN NOT FOUND");
+        }
+          else if (!IsValid(protein.amino_acids))
+        {
+            result.AppendLine("Protein is wrong written");
+        }
+        else
+        {
+            var modeResult = CalculateMode(protein.amino_acids);
+            result.AppendLine(modeResult.Item1 + "\t\t\t" + modeResult.Item2);
+        }
+
+        return result.ToString();
+    }
+
+
+
+
+    static int CalculateDifferences(string seq1, string seq2)
+    {
         int differences = 0;
 
-        for (int i = 0; i < Math.Min(protein1.amino_acids.Length, protein2.amino_acids.Length); i++)
+        for (int i = 0; i < Math.Min(seq1.Length, seq2.Length); i++)
         {
-            if (protein1.amino_acids[i] != protein2.amino_acids[i])
+            if (seq1[i] != seq2[i])
             {
                 differences++;
             }
         }
 
-        differences += Math.Abs(protein1.amino_acids.Length - protein2.amino_acids.Length);
+        differences += Math.Abs(seq1.Length - seq2.Length);
         return differences;
     }
 
@@ -133,50 +266,41 @@ static string Search(string proteinPart)
 
 
 
-
-
-    static (char, int) Mode(string proteinName)
+    static (char, int) CalculateMode(string sequence)
     {
-
-        GeneticData protein = geneticData.FirstOrDefault(p => p.protein == proteinName);
-
-        //словарь где ключ - буква, значение - кол-во этой буквы в цепочке
-        Dictionary<char, int> acids = new Dictionary<char, int>();
-        foreach (char a in protein.amino_acids)
+        Dictionary<char, int> acidCounts = new Dictionary<char, int>();
+        foreach (char a in sequence)
         {
-            if (acids.ContainsKey(a)) //ключ по букве
+            if (acidCounts.ContainsKey(a))
             {
-                acids[a]++;
+                acidCounts[a]++;
             }
             else
             {
-                acids[a] = 1;
+                acidCounts[a] = 1;
             }
         }
 
-        char mostOften = ' '; //буква
+        char mostOften = ' ';
         int maxCount = 0;
 
-        foreach (var c in acids) //перебрать весь словарь
+        foreach (var c in acidCounts)
         {
             if (c.Value > maxCount)
             {
-                mostOften = c.Key;  //буква
-                maxCount = c.Value;  //кол-во этой буквы
+                mostOften = c.Key;
+                maxCount = c.Value;
             }
         }
-
-        (char, int) result = (mostOften, maxCount);
-        return result; 
+        return (mostOften, maxCount);
     }
+
+
 
 
     static string Decode(string stroka)
     {
-
         StringBuilder result = new StringBuilder();
-       
-
         for (int i = 0; i < stroka.Length; i++)
         {
             if (char.IsDigit(stroka[i]))
@@ -187,16 +311,32 @@ static string Search(string proteinPart)
                 {
                     result.Append(bukva);
                 }
- 
             }
             else
             {
                 result.Append(stroka[i]);
-        
             }
         }
         return result.ToString();
-
     }
 
+
+
+
+
+    public static bool IsValid(string acid)
+    {
+        char[] ValidChars = {
+        'A', 'C', 'D', 'E', 'F', 'G', 'H', 'I',
+        'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S',
+        'T', 'V', 'W', 'Y'};
+        foreach (char c in acid)
+        {
+            if (!ValidChars.Contains(c))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
 }
