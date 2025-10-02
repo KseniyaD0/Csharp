@@ -14,41 +14,98 @@ class Game
 
     public Game(int size)
     {
-        this.size = size; //задаем размер игрового поля
+        this.size = size;
         cat = new Player("Cat");
         mouse = new Player("Mouse");
         state = GameState.Start;
     }
 
 
-    public void Run()
-    {
-        while (state != GameState.End) 
+public void Run()
+{
+
+    char[] commands = { 'M', 'M', 'P', 'C', 'M', 'P', 'C', 'P', 'M', 'M', 'C', 'P', 'M', 'M', 'P', 'C', 'P', 'C', 'C', 'P', 'M', 'P' };
+    int[] steps = { 7, -5, 0, 6, -7, 0, 6, 0, 4, 6, 0, 0, 0, 6, 0, -1, 0, 1, 4, 0, -4, 0 };
+
+
+
+        //начальная позиция мыши
+        for (int i = 0; i <= commands.Length; i++)
         {
-            int[] MouseCommands = { 14, -4, 10, -9, 10, -12 };
-            int[] CatCommands = { 24, 0, 0, -10, 12, 0 };
-            mouse.location = MouseCommands[0];
-            cat.location = CatCommands[0];
+            if (commands[i] == 'M')
+            {
+                mouse.location = steps[i];
+                break;
+            }
+        }
 
 
-            //метод игры
+        //начальная позиция кота
+        for (int i = 0; i <= commands.Length; i++)
+        {
+            if (commands[i] == 'C')
+            {
+                cat.location = steps[i];
+                break;
+            }
+        }
 
 
+    mouse.state = State.Playing;
+    cat.state = State.Playing;
+
+ 
+    Console.WriteLine("Поле: " + size);
+    Console.WriteLine("Начальные позиции - Мышь:" + mouse.location + ", Кот: " + cat.location + "\n");
+
+
+
+
+        for (int turn = 1; turn < commands.Length; turn++)
+        {
+            Console.WriteLine("Ход " +  turn +  ", Команда " + commands[turn] + ", Шаг: " + steps[turn]);
+
+         
+            if (commands[turn] == 'P')
+            {
+                int distance = CalculateDistance(cat, mouse, size);
+                Console.WriteLine("Позиции: Мышь = " + mouse.location + ", Кот = " + cat.location + ", Дистанция = " + distance);
+            }
+            else
+            {
+                DoMoveCommand(commands[turn], steps[turn]);
+         
+            }
+
+            // Проверяем, поймана ли мышь
             if (CheckCatch(mouse, cat))
             {
                 mouse.state = State.Looser;
                 cat.state = State.Winner;
                 state = GameState.End;
+                Console.WriteLine("Кот поймал мышь! Игра закончена.");
+                break;
             }
-            else
-            {
-                mouse.state = State.Winner;
-                cat.state = State.Looser;
-                state = GameState.End;
-            }
-
+            Console.WriteLine();
         }
-    }
+
+
+
+  
+        if (state != GameState.End)
+        {
+            mouse.state = State.Winner;
+            cat.state = State.Looser;
+            state = GameState.End;
+            Console.WriteLine("Мышь убежала! Игра закончена.");
+        }
+
+    // Финальные позиции
+    Console.WriteLine($"Финальные позиции -- Мышь:" + mouse.location + ", Кот: " + cat.location + "\n");
+    Console.WriteLine("Победитель:" + (mouse.state == State.Winner ? "Мышь" : "Кот"));
+}
+
+
 
 
 
@@ -62,25 +119,27 @@ class Game
         }
     }
 
+
+
     public int CalculateDistance(Player cat, Player mouse, int size)
     {
         if (mouse.state != State.Playing || cat.state != State.Playing)
+        {
             return -1;
+        }
+
 
         int pos1 = mouse.location;
         int pos2 = cat.location;
 
-        int distance1 = Math.Abs(pos1 - pos2);
-        int distance2 = size - distance1;
-
-        return Math.Min(distance1, distance2);
+        int distance = Math.Abs(pos1 - pos2);
+        return distance;
     }
 
 
 
     public bool CheckCatch(Player mouse, Player cat)
     {
-        return (mouse.state == State.Playing && cat.state == State.Playing && mouse.location == cat.location);
-                
+        return (mouse.state == State.Playing && cat.state == State.Playing && mouse.location == cat.location);          
     }
 }
