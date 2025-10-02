@@ -1,0 +1,14 @@
+C:\Users\kseni\OneDrive\Desktop\Lab2\bin\Debug\net9.0\Lab2.exe
+C:\Users\kseni\OneDrive\Desktop\Lab2\bin\Debug\net9.0\Lab2.deps.json
+C:\Users\kseni\OneDrive\Desktop\Lab2\bin\Debug\net9.0\Lab2.runtimeconfig.json
+C:\Users\kseni\OneDrive\Desktop\Lab2\bin\Debug\net9.0\Lab2.dll
+C:\Users\kseni\OneDrive\Desktop\Lab2\bin\Debug\net9.0\Lab2.pdb
+C:\Users\kseni\OneDrive\Desktop\Lab2\obj\Debug\net9.0\Lab2.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\kseni\OneDrive\Desktop\Lab2\obj\Debug\net9.0\Lab2.AssemblyInfoInputs.cache
+C:\Users\kseni\OneDrive\Desktop\Lab2\obj\Debug\net9.0\Lab2.AssemblyInfo.cs
+C:\Users\kseni\OneDrive\Desktop\Lab2\obj\Debug\net9.0\Lab2.csproj.CoreCompileInputs.cache
+C:\Users\kseni\OneDrive\Desktop\Lab2\obj\Debug\net9.0\Lab2.dll
+C:\Users\kseni\OneDrive\Desktop\Lab2\obj\Debug\net9.0\refint\Lab2.dll
+C:\Users\kseni\OneDrive\Desktop\Lab2\obj\Debug\net9.0\Lab2.pdb
+C:\Users\kseni\OneDrive\Desktop\Lab2\obj\Debug\net9.0\Lab2.genruntimeconfig.cache
+C:\Users\kseni\OneDrive\Desktop\Lab2\obj\Debug\net9.0\ref\Lab2.dll
