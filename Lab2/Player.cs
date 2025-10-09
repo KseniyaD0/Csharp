@@ -8,36 +8,27 @@ enum State
 
 class Player
 {
-    public string name; //имя игрока
-    public int location; //позиция на поле
-    public State state = State.NotInGame; //состояние
+    public string name;
+    public int location;
+    public State state = State.NotInGame;
 
     public Player(string name)
     {
         this.name = name;
-        this.location = -1; //не в игре
+        this.location = 1;
     }
-
-
-
 
     public void Move(int steps, int fieldSize)
     {
-        if (state == State.Playing)
+
+        if (state == State.NotInGame)
         {
-
-            int oldPosition = location;
-
-
-            int newPosition = (location + steps - 1) % fieldSize + 1;
-
-            if (newPosition <= 0)
-            {
-                newPosition += fieldSize;
-            }
-
-            location = newPosition;
+            state = State.Playing;
+            Console.WriteLine(name + " входит в игру");
         }
+
+      int newPosition = (location + steps - 1) % fieldSize + 1;
+        location = newPosition;
     }
 }
 
