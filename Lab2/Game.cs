@@ -4,13 +4,13 @@ enum GameState
     End
 }
 
+       
 class Game
 {
-    public int size; //размер поля
+    public int size;
     public Player cat;
     public Player mouse;
     public GameState state;
-
 
     public Game(int size)
     {
@@ -21,125 +21,113 @@ class Game
     }
 
 
-public void Run()
-{
-
-    char[] commands = { 'M', 'M', 'P', 'C', 'M', 'P', 'C', 'P', 'M', 'M', 'C', 'P', 'M', 'M', 'P', 'C', 'P', 'C', 'C', 'P', 'M', 'P' };
-    int[] steps = { 7, -5, 0, 6, -7, 0, 6, 0, 4, 6, 0, 0, 0, 6, 0, -1, 0, 1, 4, 0, -4, 0 };
-
+    public void Run()
+    {
+        char[] commands = { 'M', 'M', 'P', 'C', 'M', 'P', 'C', 'P', 'M', 'M', 'C', 'P', 'M', 'M', 'P', 'C', 'P', 'C', 'C', 'P', 'M', 'P' };
+        int[] steps = { 7, -5, 0, 6, -7, 0, 6, 0, 4, 6, 0, 0, 0, 6, 0, -1, 0, 1, 4, 0, -4, 0 };
 
 
-        //начальная позиция мыши
-        for (int i = 0; i <= commands.Length; i++)
+        mouse.location = 1;
+        cat.location = 1;
+
+        Console.WriteLine("Поле: " + size);
+
+        for (int turn = 0; turn < commands.Length; turn++)
         {
-            if (commands[i] == 'M')
-            {
-                mouse.location = steps[i];
-                break;
-            }
-        }
+            Console.WriteLine("Ход " + (turn + 1) + ", Команда " + commands[turn] + ", Шаг: " + steps[turn]);
 
-
-        //начальная позиция кота
-        for (int i = 0; i <= commands.Length; i++)
-        {
-            if (commands[i] == 'C')
-            {
-                cat.location = steps[i];
-                break;
-            }
-        }
-
-
-    mouse.state = State.Playing;
-    cat.state = State.Playing;
-
- 
-    Console.WriteLine("Поле: " + size);
-    Console.WriteLine("Начальные позиции - Мышь:" + mouse.location + ", Кот: " + cat.location + "\n");
-
-
-
-
-        for (int turn = 1; turn < commands.Length; turn++)
-        {
-            Console.WriteLine("Ход " +  turn +  ", Команда " + commands[turn] + ", Шаг: " + steps[turn]);
-
-         
             if (commands[turn] == 'P')
             {
-                int distance = CalculateDistance(cat, mouse, size);
-                Console.WriteLine("Позиции: Мышь = " + mouse.location + ", Кот = " + cat.location + ", Дистанция = " + distance);
+                int distance = CalculateDistance(cat, mouse);
+                if (distance == -1)
+                {
+                    // Кто-то не в игре
+                    if (mouse.state == State.NotInGame && cat.state == State.NotInGame)
+                        Console.WriteLine("Оба игрока не в игре");
+                    else if (mouse.state == State.NotInGame)
+                        Console.WriteLine("Мышь не в игре");
+                    else if (cat.state == State.NotInGame)
+                        Console.WriteLine("Кот не в игре");
+                }
+                else
+                {
+                    Console.WriteLine("Позиции: Мышь = " + mouse.location + ", Кот = " + cat.location + ", Дистанция = " + distance);
+                }
             }
             else
             {
                 DoMoveCommand(commands[turn], steps[turn]);
-         
             }
 
-            // Проверяем, поймана ли мышь
+
             if (CheckCatch(mouse, cat))
             {
                 mouse.state = State.Looser;
                 cat.state = State.Winner;
                 state = GameState.End;
-                Console.WriteLine("Кот поймал мышь! Игра закончена.");
+                Console.WriteLine("Кот поймал мышь! Игра окончена.");
                 break;
             }
             Console.WriteLine();
         }
 
-
-
-  
         if (state != GameState.End)
         {
             mouse.state = State.Winner;
             cat.state = State.Looser;
             state = GameState.End;
-            Console.WriteLine("Мышь убежала! Игра закончена.");
+            Console.WriteLine("Мышь убежала! Игра окончена.");
         }
 
-    // Финальные позиции
-    Console.WriteLine($"Финальные позиции -- Мышь:" + mouse.location + ", Кот: " + cat.location + "\n");
-    Console.WriteLine("Победитель:" + (mouse.state == State.Winner ? "Мышь" : "Кот"));
-}
 
-
-
-
-
+        Console.WriteLine("Финальные позиции -- Мышь:" + mouse.location + ", Кот:" + cat.location + "\n");
+        Console.WriteLine("Победитель: " + (mouse.state == State.Winner ? "Мышь" : "Кот"));
+    }
 
     private void DoMoveCommand(char command, int step)
     {
         switch (command)
         {
-            case 'M': mouse.Move(step, size); break;
-            case 'C': cat.Move(step, size); break;
+            case 'M':
+                if (mouse.state == State.NotInGame)
+                {
+      
+                    mouse.state = State.Playing;
+                    Console.WriteLine("Мышь входит в игру!");
+                }
+                if (mouse.state == State.Playing)
+                {
+                    mouse.Move(step, size);
+                }
+                break;
+            case 'C':
+                if (cat.state == State.NotInGame)
+                {
+
+                    cat.state = State.Playing;
+                    Console.WriteLine("Кот входит в игру!");
+                }
+                if (cat.state == State.Playing)
+                {
+                    cat.Move(step, size);
+                }
+                break;
         }
     }
 
-
-
-    public int CalculateDistance(Player cat, Player mouse, int size)
+    public int CalculateDistance(Player cat, Player mouse)
     {
+        // Если кто-то не в игре
         if (mouse.state != State.Playing || cat.state != State.Playing)
         {
             return -1;
         }
 
-
-        int pos1 = mouse.location;
-        int pos2 = cat.location;
-
-        int distance = Math.Abs(pos1 - pos2);
-        return distance;
+        return Math.Abs(mouse.location - cat.location);
     }
-
-
 
     public bool CheckCatch(Player mouse, Player cat)
     {
-        return (mouse.state == State.Playing && cat.state == State.Playing && mouse.location == cat.location);          
+        return (mouse.state == State.Playing && cat.state == State.Playing && mouse.location == cat.location);
     }
 }
