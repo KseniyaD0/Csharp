@@ -10,12 +10,14 @@ class Realization
         Text text = new Text();
         Sentence sentence = new Sentence();
         StringBuilder word = new StringBuilder();
+        bool NOWInWord = false;
+         
 
         for (int i = 0; i < TextFromFile.Length; i++)
         {
             char c = TextFromFile[i];
 
-            bool NOWInWord = false;
+           
 
             //буква
             if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
@@ -56,6 +58,13 @@ class Realization
 
             else if ((c == '.') || (c == '!') || (c == '?'))
             {
+                if (NOWInWord)
+                {
+                    sentence.AddWord(new Word(word.ToString()));
+                    word.Clear();
+                    NOWInWord = false;
+                }
+                
                 text.AddSentence(sentence);
                 sentence = new Sentence();
             }
@@ -71,3 +80,4 @@ class Realization
     }
 
 }
+
