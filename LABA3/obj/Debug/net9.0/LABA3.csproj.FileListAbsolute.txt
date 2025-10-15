@@ -1,0 +1,14 @@
+C:\Users\kseni\OneDrive\Documents\vs code\LABA3\obj\Debug\net9.0\LABA3.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\kseni\OneDrive\Documents\vs code\LABA3\obj\Debug\net9.0\LABA3.AssemblyInfoInputs.cache
+C:\Users\kseni\OneDrive\Documents\vs code\LABA3\obj\Debug\net9.0\LABA3.AssemblyInfo.cs
+C:\Users\kseni\OneDrive\Documents\vs code\LABA3\obj\Debug\net9.0\LABA3.csproj.CoreCompileInputs.cache
+C:\Users\kseni\OneDrive\Documents\vs code\LABA3\bin\Debug\net9.0\LABA3.exe
+C:\Users\kseni\OneDrive\Documents\vs code\LABA3\bin\Debug\net9.0\LABA3.deps.json
+C:\Users\kseni\OneDrive\Documents\vs code\LABA3\bin\Debug\net9.0\LABA3.runtimeconfig.json
+C:\Users\kseni\OneDrive\Documents\vs code\LABA3\bin\Debug\net9.0\LABA3.dll
+C:\Users\kseni\OneDrive\Documents\vs code\LABA3\bin\Debug\net9.0\LABA3.pdb
+C:\Users\kseni\OneDrive\Documents\vs code\LABA3\obj\Debug\net9.0\LABA3.dll
+C:\Users\kseni\OneDrive\Documents\vs code\LABA3\obj\Debug\net9.0\refint\LABA3.dll
+C:\Users\kseni\OneDrive\Documents\vs code\LABA3\obj\Debug\net9.0\LABA3.pdb
+C:\Users\kseni\OneDrive\Documents\vs code\LABA3\obj\Debug\net9.0\LABA3.genruntimeconfig.cache
+C:\Users\kseni\OneDrive\Documents\vs code\LABA3\obj\Debug\net9.0\ref\LABA3.dll
