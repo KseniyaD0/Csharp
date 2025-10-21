@@ -1,7 +1,7 @@
 
 using System.Text;
 
-public class Sentence
+public class Sentence : IText
     {
         public List<object> Elements = new List<object>();  // слова и пунктуация
 
@@ -26,7 +26,7 @@ public class Sentence
             int count = 0;
             foreach (var element in Elements)
             {
-                if (element is Word)
+                if (element is Word word)
                     count++;
             }
             return count;
@@ -40,7 +40,7 @@ public class Sentence
         {
             if (element is Word word)
                 length += word.Length();
-            else if (element is Punctuation punct)
+            else if (element is Punctuation punctuation)
                 length += 1;
         }
         return length;
@@ -56,9 +56,12 @@ public class Sentence
             foreach (var element in Elements)
             {
                 if (element is Word word) { stroka.Append(word.Slovo); }
-                else if (element is Punctuation punct) { stroka.Append(punct.Symbol); }
+                else if (element is Punctuation punctuation) { stroka.Append(punctuation.Symbol); }
             }
             
         return stroka.ToString();
         }
     }
+
+
+
