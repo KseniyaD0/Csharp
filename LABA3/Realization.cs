@@ -4,20 +4,17 @@ class Realization
 {
 
 
-
     public Text Tokenization(string TextFromFile)
     {
         Text text = new Text();
         Sentence sentence = new Sentence();
         StringBuilder word = new StringBuilder();
         bool NOWInWord = false;
-         
+
 
         for (int i = 0; i < TextFromFile.Length; i++)
         {
             char c = TextFromFile[i];
-
-           
 
             //буква
             if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
@@ -26,8 +23,6 @@ class Realization
                 word.Append(c);
                 NOWInWord = true;
             }
-
-
 
             //если пробел
             else if (char.IsWhiteSpace(c))
@@ -39,8 +34,6 @@ class Realization
                     NOWInWord = false;
                 }
             }
-
-
 
             //пунктуация
             else if ((c == ',') || (c == ';') || (c == ':') ||
@@ -56,6 +49,7 @@ class Realization
                 sentence.AddPunctuation(new Punctuation(c));
             }
 
+
             else if ((c == '.') || (c == '!') || (c == '?'))
             {
                 if (NOWInWord)
@@ -64,20 +58,50 @@ class Realization
                     word.Clear();
                     NOWInWord = false;
                 }
-                
                 text.AddSentence(sentence);
+                 sentence.AddPunctuation(new Punctuation(c));
                 sentence = new Sentence();
+                
+                
             }
 
-        }
-
-        if (sentence.Elements.Count > 0)
-        {
-            text.AddSentence(sentence);
         }
 
         return text;
     }
 
-}
 
+
+     public void First()
+    {
+
+    }
+
+
+    public void Second()
+    {
+
+    }
+
+    public void Third()
+    {
+
+    }
+    public void Fourth()
+    {
+
+    }
+    public void Fifth()
+    {
+
+    }
+    public void Sixth()
+    {
+
+    }
+    public void Seventh()
+    {
+
+    }
+
+}
